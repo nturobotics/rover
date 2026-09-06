@@ -1,11 +1,11 @@
 # Rover
 
 ## Setup
-### Conect device to ESP32 cam
-
 ### Install Arduino IDE
 1. [Download](https://www.arduino.cc/en/software/)
 2. [Guide](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/)
+3. [Finding our board](https://www.youtube.com/watch?v=z67mfL63e2M)
+4. 
 
 ### PlatformIO + VS code plugin
 1. [VS code](https://code.visualstudio.com/download?_exp_download=fb315fc982)
@@ -13,7 +13,7 @@
 3. Create a project
 4. Choose device as **AIthinker ESP32 Cam**
 
-### ESP32 Cam Blink Test
+#### ESP32 Cam Blink Test
 1. go to **(project)>src > main.ccp**
 2. copy and paste [blink test](blink_test.cpp) file
 
@@ -23,7 +23,7 @@
 6. press clean (trash bin icon)
 
 
-### Connect Wifi
+#### Connect Wifi
 1. go to **(project) > platformio.ini**
 2. copy and paste under everything else
 ```
