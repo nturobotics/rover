@@ -5,7 +5,17 @@
 1. [Download](https://www.arduino.cc/en/software/)
 2. [Guide](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/)
 3. [Finding our board](https://www.youtube.com/watch?v=z67mfL63e2M)
-4. 
+
+#### Wireless Test
+1. copy and paste [wireless test](wireless_test.cpp) file
+2. change wifi SSID and password
+3. upload (top left **right arrow** symbol)
+4. open serial monitor (top right **magnifying glass** symbol)
+5. choose **115200** baud (bottom right dropdown menu)
+6. copy wifi **{IP Address}**
+7. paste server link in browser **http://{IP Address}/L**
+8. Press turn on and off light on server page
+
 
 ### PlatformIO + VS code plugin
 1. [VS code](https://code.visualstudio.com/download?_exp_download=fb315fc982)
