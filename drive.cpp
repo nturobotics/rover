@@ -1,7 +1,7 @@
 #include <WiFi.h>
 
-const char *ssid = "12";
-const char *password = "12121212";
+const char *ssid = "{wifi}";
+const char *password = "{password}";
 
 // ===== Motor Pins (safe pins) =====
 #define IN1 13
