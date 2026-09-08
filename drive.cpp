@@ -1,18 +1,16 @@
 #include <WiFi.h>
 
-const char *ssid = "{wifi}";
-const char *password = "{password}";
+const char *ssid = "";
+const char *password = "";
 
-// ===== Motor Pins (safe pins) =====
+// Motor pins
 #define IN1 13
 #define IN2 14
-#define IN3 15   // use GPIO15 (add 10k pulldown) or GPIO2 (also needs pulldown)
-#define IN4 16   // GPIO16 is safe
+#define IN3 2
+#define IN4 4
 
 #define PWM_FREQ 5000
 #define PWM_RES 8   // 0-255
-
-WiFiServer server(80);
 
 void setupMotors() {
   pinMode(IN1, OUTPUT);
@@ -20,7 +18,8 @@ void setupMotors() {
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
-  // Attach all pins to PWM (duty cycle defaults to 0)
+  // Attach each pin to its own PWM channel (automatically assigned)
+  // ledcAttach(pin, freq, resolution) - available in older and newer cores
   ledcAttach(IN1, PWM_FREQ, PWM_RES);
   ledcAttach(IN2, PWM_FREQ, PWM_RES);
   ledcAttach(IN3, PWM_FREQ, PWM_RES);
@@ -51,7 +50,7 @@ void moveBackward(int speed) {
 void turnLeft(int speed) {
   ledcWrite(IN1, 0);
   ledcWrite(IN2, speed);
-  ledcWrite(IN3, speed);
+  ledcWrite(IN3, 0);
   ledcWrite(IN4, 0);
 }
 
@@ -62,17 +61,19 @@ void turnRight(int speed) {
   ledcWrite(IN4, speed);
 }
 
+WiFiServer server(80);
+
 void setup() {
   Serial.begin(115200);
   setupMotors();
-  stopMotors();  // ensure motors are off at start
+  stopMotors();
 
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("\nIP: " + WiFi.localIP().toString());
+  Serial.println("\http://" + WiFi.localIP().toString() + "/");
   server.begin();
 }
 
@@ -81,16 +82,15 @@ void loop() {
   if (!client) return;
 
   String currentLine = "";
-  int speed = 200;  // adjust 0-255
+  int speed = 200;  // adjust as needed
 
   while (client.connected()) {
     if (client.available()) {
       char c = client.read();
       currentLine += c;
 
-      // Detect end of HTTP request (blank line)
       if (c == '\n' && currentLine.length() == 2) {
-        // Send HTML page
+        // send HTML
         client.println("HTTP/1.1 200 OK");
         client.println("Content-type:text/html");
         client.println();
@@ -104,20 +104,12 @@ void loop() {
         break;
       }
 
-      // ===== FIXED: Use startsWith() to catch the full request =====
-      if (currentLine.startsWith("GET /F")) {
-        moveForward(speed);
-      } else if (currentLine.startsWith("GET /B")) {
-        moveBackward(speed);
-      } else if (currentLine.startsWith("GET /L")) {
-        turnLeft(speed);
-      } else if (currentLine.startsWith("GET /R")) {
-        turnRight(speed);
-      } else if (currentLine.startsWith("GET /S")) {
-        stopMotors();
-      }
+      if (currentLine.endsWith("GET /F")) moveForward(speed);
+      else if (currentLine.endsWith("GET /B")) moveBackward(speed);
+      else if (currentLine.endsWith("GET /L")) turnLeft(speed);
+      else if (currentLine.endsWith("GET /R")) turnRight(speed);
+      else if (currentLine.endsWith("GET /S")) stopMotors();
 
-      // Reset line buffer after each newline
       if (c == '\n') currentLine = "";
     }
   }
