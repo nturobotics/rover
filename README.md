@@ -24,7 +24,7 @@
 4. Choose device as **AIthinker ESP32 Cam**
 
 #### ESP32 Cam Blink Test
-1. go to **(project)>src > main.ccp**
+1. go to **(project)>src > main.cpp**
 2. copy and paste [blink test](blink_test.cpp) file
 
 3. build and upload
@@ -41,7 +41,7 @@ monitor_speed = 115200 // serial monitor will show garbled text *?xx??xxxxxx* if
 monitor_rts = 0
 monitor_dtr = 0
 ```
-3. go to **(project)>src > main.ccp**
+3. go to **(project)>src > main.cpp**
 4. copy and paste [wifi scan](wifi_scan.cpp) file
 5. build and upload
 6. open serial monitor **(plug icon)**
