@@ -16,6 +16,9 @@
 7. paste server link in browser **http://{IP Address}/L**
 8. Press turn on and off light on server page
 
+#### Camera
+1. [guide](https://lastminuteengineers.com/getting-started-with-esp32-cam/)
+
 
 ### PlatformIO + VS code plugin
 1. [VS code](https://code.visualstudio.com/download?_exp_download=fb315fc982)
