@@ -1,4 +1,3 @@
-
 # Setup
 ## Install Arduino IDE
 1. [Download](https://www.arduino.cc/en/software/)
@@ -61,34 +60,37 @@ monitor_dtr = 0
 
 ## Container
 ### Outer Wall
-
-
 [](https://github.com/user-attachments/assets/a5e99203-3ade-498d-809d-e49bd2d916f6)
-
 
 ![](Images/outer_wall.png)
 ### Inner Wall
+[](https://github.com/user-attachments/assets/da4df0dd-af4f-4e59-848b-a63e858b195d)
 
 ![](Images/inner_wall.png)
 ### Bolt Holes
+[](https://github.com/user-attachments/assets/27214523-afbd-4703-bcae-0e40a43c85ab)
 
 ![](Images/bolt_holes.png)
 ### Side Sketch
-
+[side.webm](https://github.com/user-attachments/assets/36426668-020c-44df-9053-4a59281ac936)
 
 ![](Images/side_sketch.png)
 ### Front
-- ![](Images/front.png)
+[](https://github.com/user-attachments/assets/d10900fe-48e4-41cb-896e-6aa9c3cc8334)
+
+![](Images/front.png)
 ### Finished Container
-- ![](Images/container.png)
+![](Images/container.png)
 
 ## Lid
+[](https://github.com/user-attachments/assets/992a540b-3695-44bd-847e-d5f1035c15b0)
+
 ### Cover
-- ![](Images/lid_sketch.png)
+![](Images/lid_sketch.png)
 ### Bolt Holes
-- ![](Images/bolt_holes.png)
+![](Images/bolt_holes.png)
 ### Blank Lid
-- ![](Images/blank_lid.png)
+![](Images/blank_lid.png)
 ### Decorated Lid
 - ![](Images/decorated_lid.png)
 
