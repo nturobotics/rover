@@ -1,3 +1,4 @@
+
 # Setup
 ## Install Arduino IDE
 1. [Download](https://www.arduino.cc/en/software/)
@@ -60,20 +61,27 @@ monitor_dtr = 0
 
 ## Container
 ### Outer Wall
-![](Videos/outer_wall.webm)
+![](https://github.com/user-attachments/assets/e7333ce2-e998-4b38-a22c-77f2f57a4de5)
 ![](Images/outer_wall.png)
 ### Inner Wall
-- ![](Images/inner_wall.png)
+![](https://github.com/user-attachments/assets/d5e4f88b-5449-4a3c-bd1d-35416dd9c025)
+![](Images/inner_wall.png)
 ### Bolt Holes
-- ![](Images/bolt_holes.png)
+[](https://github.com/user-attachments/assets/88bf8b61-e23b-4b81-b1c2-a49fef672c6e)
+![](Images/bolt_holes.png)
 ### Side Sketch
-- ![](Images/side_sketch.png)
+[side.webm](https://github.com/user-attachments/assets/8dae6a73-2e0c-4bf5-8855-766b844778cd)
+
+![](Images/side_sketch.png)
 ### Front
+[](https://github.com/user-attachments/assets/03c82f17-2845-4009-8d1d-5a7f484af1d8
+)
 - ![](Images/front.png)
 ### Finished Container
 - ![](Images/container.png)
 
 ## Lid
+[](https://github.com/user-attachments/assets/3f7f2bde-a309-4950-a11d-0ba88ebb1534)
 ### Cover
 - ![](Images/lid_sketch.png)
 ### Bolt Holes
