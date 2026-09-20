@@ -52,5 +52,15 @@ monitor_dtr = 0
 
    if garbled text appears, incorrect or mismatched speed.
 
+## Design
+- ![](Images/circuit.png)
+[Circuit Cesign](https://app.cirkitdesigner.com/project/c6ccce3c-a848-4c31-a3ae-477986d8f76b)
+- ![](Images/tt_motor.png)
+- ![](Images/tt_motor_bracket.png)
+### 3D Design
+- ![](Images/outer_wall.png)
+- ![](Images/inner_wall.png)
+- ![](Images/bolt_holes.png)
+[OnShape Design](https://cad.onshape.com/documents/e64b89430876cdb7d6b69ab3/w/77c1ce2ce73c963871a615a2/e/e7f76abc5f1c2211f29a23ec?renderMode=0&uiState=6aaf8ad37668e8bcef2a1785)
 ## Guides
 - [ESP starter](https://deepbluembedded.com/getting-started-with-esp32-programming-tutorials/)
