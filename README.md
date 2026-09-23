@@ -83,7 +83,7 @@ monitor_dtr = 0
 ![](Images/container.png)
 
 ### Bottom bolts
-![](Images/bottom_sketch.png)
+![](Images/bottom_holes.png)
 
 ## Lid
 [](https://github.com/user-attachments/assets/992a540b-3695-44bd-847e-d5f1035c15b0)
