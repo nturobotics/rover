@@ -97,6 +97,7 @@ monitor_dtr = 0
 ![](Images/container.png)
 ### Outer Wall
 [](https://github.com/user-attachments/assets/a5e99203-3ade-498d-809d-e49bd2d916f6)
+![Back up Video](https://drive.google.com/file/d/10bQSxi4F78DpcNu3Cwgn1C-IWU_hz5OE/view?usp=drive_link)
 
 ![](Images/outer_wall.png)
 ### Inner Wall
