@@ -1,2 +1,0 @@
-include:
-  - component: $CI_SERVER_FQDN/to-be-continuous/mkdocs/gitlab-ci-mkdocs@2.10.0
