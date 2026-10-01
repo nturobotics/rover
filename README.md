@@ -16,7 +16,7 @@
 ## L298N Motor Driver
 ![L298N Motor Driver](https://arduinoyard.com/wp-content/uploads/2025/02/l298n_motordriver_pinout_bb.png)
   
-## Q054 geared motor TT 130
+## Q054 geared motor TT 130 (1:220)
 ![TT Motor](https://docs.sunfounder.com/projects/galaxy-rvr/en/latest/_images/motor_size.jpg)
   
 ## Q054 geared motor TT 130 Bracket
@@ -145,7 +145,8 @@ monitor_dtr = 0
 
 
 # Circuit
-- ![](Images/circuit.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/ae107493-a26b-4a37-8dc5-e43c11870b44" />
+
 [Circuit Design](https://app.cirkitdesigner.com/project/c6ccce3c-a848-4c31-a3ae-477986d8f76b)
 
   
