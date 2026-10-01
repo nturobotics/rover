@@ -25,12 +25,6 @@
 ## Q016 rubber tire (20T65) 65MM
 ![Q016 rubber tire (20T65) 65MM](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsc04.alicdn.com%2Fkf%2FHca8820e923f0480a8a8a955f87e4b8dew%2F231573752%2FHca8820e923f0480a8a8a955f87e4b8dew.jpg&f=1&nofb=1&ipt=85a892d917c41d6dc53f03f6b90fd0caf973b449a729b962d31e61467ef7a168)
 
-## XL6009 DC-DC Voltage Booster
-![XL6009 DC-DC Voltage Booster](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fblogger.googleusercontent.com%2Fimg%2Fb%2FR29vZ2xl%2FAVvXsEgIvwAsF3_N7-x4d9W4hWRnFzd_pLYQCGDoJ2oeoHnM_UZIGvTMCecxUccxBcEN-Ktrwi12Wf2KNKnET0z_ZULt-gCL6Wvzg2OqtgEcVLp0j9kMXYWI8pCIwksrZeClLxWXakHLFZEjE2Ou3vgmc_QI-MCytz6umX5aZrrgxC3oq7OxFrzZ2N5fRm-DW1N4%2Fs1280%2FSchematic-of-xl6019-adjustable-dc-to-dc-step-up-converter-circuit_Electrothinks.png&f=1&nofb=1&ipt=ca9245dfe2e435692e0b96a8f5613912d5cf912885c10ed7d569d3f5dc712c27)
-
-## LM2596 DC-DC Voltage Bucker ( + Display + Screw Terminal Block )
-![LM2596 DC-DC Voltage Bucker](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Feleberric.com%2Fwp-content%2Fuploads%2F2025%2F06%2FLM2596-Buck-Converter-with-Display.jpg&f=1&nofb=1&ipt=03f64bfda6245f896e6668fac094b70c8072c5945c338ef890a414006372121c)
-
 ## 18650 Battery
 ![18650 battery](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIP.WDeJ6twWpFDkR6nIgntv9QHaHa%3Fr%3D0%26pid%3DApi&f=1&ipt=ab356e589da4fb0a92e15865c9a8f4ddb21aa08ea32c65e3c8fa7a9c927967ae&ipo=images)
 
