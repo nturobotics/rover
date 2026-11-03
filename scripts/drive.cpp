@@ -1,13 +1,13 @@
 #include <WiFi.h>
 
-const char *ssid = "12";
-const char *password = "12121212";
+const char *ssid = "wifi-name";
+const char *password = "wifi-password";
 
 // ===== Motor pins =====
 #define IN1 13
 #define IN2 14
-#define IN3 15   // ADD a 10k resistor from GPIO15 to GND !
-#define IN4 4    // Flash LED – disable flash if used
+#define IN3 15   
+#define IN4 4    
 
 #define PWM_FREQ 5000
 #define PWM_RES 8
