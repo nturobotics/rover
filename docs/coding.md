@@ -52,3 +52,6 @@ monitor_dtr = 0
 7. network names and types will appear
 
    if garbled text appears, incorrect or mismatched speed.
+
+- [ESP starter](https://deepbluembedded.com/getting-started-with-esp32-programming-tutorials/)
+
