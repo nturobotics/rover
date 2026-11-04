@@ -39,9 +39,13 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 
 ### Connect Wifi
 1. go to **(project) > platformio.ini**
-2. copy and paste under everything else
+2. deletee everything, copy and paste this
 ```
-monitor_speed = 115200 // serial monitor will show garbled text *?xx??xxxxxx* if incorrect speed
+[env:esp32cam]
+platform = espressif32
+board = esp32cam
+framework = arduino
+monitor_speed = 115200
 monitor_rts = 0
 monitor_dtr = 0
 ```
