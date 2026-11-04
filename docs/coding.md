@@ -46,12 +46,13 @@ monitor_rts = 0
 monitor_dtr = 0
 ```
 3. go to **(project) > src > main.cpp**
-4. copy and paste [wifi scan](wifi_scan.cpp) file
+4. copy and paste [drive](https://github.com/nturobotics/rover/blob/main/scripts/drive.cpp) file
 5. build and upload
 6. open serial monitor **(plug icon)**
-7. network names and types will appear
+
 
    if garbled text appears, incorrect or mismatched speed.
+
 
 - [ESP starter](https://deepbluembedded.com/getting-started-with-esp32-programming-tutorials/)
 
