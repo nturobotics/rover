@@ -37,7 +37,7 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 5. delete previous processes in bottom right panel. (build) (upload) (monitor)
 6. press clean (trash bin icon)
 
-### Connect Wifi
+### Connect Wifi camera
 1. go to **(project) > platformio.ini**
 2. deletee everything, copy and paste this
 ```
@@ -50,7 +50,7 @@ monitor_rts = 0
 monitor_dtr = 0
 ```
 3. go to **(project) > src > main.cpp**
-4. copy and paste [wifi connect](https://github.com/nturobotics/rover/blob/main/scripts/camera.cpp) file
+4. copy and paste [camera](https://github.com/nturobotics/rover/blob/main/scripts/camera.cpp) file
 5. build and upload
 6. open serial monitor **(plug icon)**
 
