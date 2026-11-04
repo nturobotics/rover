@@ -27,7 +27,7 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 1. [VS code](https://code.visualstudio.com/download?_exp_download=fb315fc982)
 2. search and install PlatformIO plugin
 3. Create a project
-4. Choose device as **AIthinker ESP32 Cam**
+4. Choose device as **AI thinker ESP32 Cam**
 
 ### ESP32 Cam Blink Test
 1. go to **(project)>src > main.cpp**
