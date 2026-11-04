@@ -31,7 +31,7 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 
 ### ESP32 Cam Blink Test
 1. go to **(project)>src > main.cpp**
-2. copy and paste [blink test](blink_test.cpp) file
+2. copy and paste [blink test](scripts/blink_test.cpp) file
 3. build and upload
 4. Disconnect cable to stop the test
 5. delete previous processes in bottom right panel. (build) (upload) (monitor)
