@@ -4,7 +4,7 @@ For the IDE (integrated development environment), choose Arduino IDE or VScode +
 
 Arduino IDE ESP32-CAM libraries take a long time to download
 
-## PlatformIO + VS Code plugin
+## Setup (VS code + Platform IO)
 1. [VS code](https://code.visualstudio.com/download?_exp_download=fb315fc982)
 2. search and install PlatformIO plugin
 3. Create a project
