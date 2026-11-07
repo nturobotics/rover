@@ -4,25 +4,6 @@ For the IDE (integrated development environment), choose Arduino IDE or VScode +
 
 Arduino IDE ESP32-CAM libraries take a long time to download
 
-## Arduino IDE
-1. [Download](https://www.arduino.cc/en/software/)
-2. [Guide](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/)
-3. [Finding our board](https://www.youtube.com/watch?v=z67mfL63e2M)
-
-### Wireless Test
-1. copy and paste [wireless test](wireless_test.cpp) file
-2. change wifi SSID and password
-3. upload (top left **right arrow** symbol)
-4. open serial monitor (top right **magnifying glass** symbol)
-5. choose **115200** baud (bottom right dropdown menu)
-6. copy wifi **{IP Address}**
-7. paste server link in browser **http://{IP Address}/L**
-8. Press turn on and off light on server page
-
-### Camera
-1. [guide](https://lastminuteengineers.com/getting-started-with-esp32-cam/)
-
-
 ## PlatformIO + VS Code plugin
 1. [VS code](https://code.visualstudio.com/download?_exp_download=fb315fc982)
 2. search and install PlatformIO plugin
@@ -62,4 +43,24 @@ monitor_dtr = 0
 
 
 - [ESP starter](https://deepbluembedded.com/getting-started-with-esp32-programming-tutorials/)
+
+
+
+## Arduino IDE
+1. [Download](https://www.arduino.cc/en/software/)
+2. [Guide](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/)
+3. [Finding our board](https://www.youtube.com/watch?v=z67mfL63e2M)
+
+### Wireless Test
+1. copy and paste [wireless test](wireless_test.cpp) file
+2. change wifi SSID and password
+3. upload (top left **right arrow** symbol)
+4. open serial monitor (top right **magnifying glass** symbol)
+5. choose **115200** baud (bottom right dropdown menu)
+6. copy wifi **{IP Address}**
+7. paste server link in browser **http://{IP Address}/L**
+8. Press turn on and off light on server page
+
+### Camera
+1. [guide](https://lastminuteengineers.com/getting-started-with-esp32-cam/)
 
