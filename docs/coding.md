@@ -29,6 +29,9 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 3. Create a project
 4. Choose device as **AI thinker ESP32 Cam**
 
+[setup.webm](https://github.com/user-attachments/assets/9860006f-be23-491a-b1ea-f8f2e525caa0)
+
+
 ### ESP32 Cam Blink Test
 1. go to **(project)>src > main.cpp**
 2. copy and paste [blink test](https://github.com/nturobotics/rover/blob/main/scripts/blink_test.cpp) file
