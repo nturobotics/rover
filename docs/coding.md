@@ -23,7 +23,7 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 
 ### Connect Wifi camera
 1. go to **(project) > platformio.ini**
-2. deletee everything, copy and paste this
+2. delete everything, copy and paste this
 ```
 [env:esp32cam]
 platform = espressif32
@@ -39,12 +39,9 @@ monitor_dtr = 0
 6. open serial monitor **(plug icon)**
 
 
-   if garbled text appears, incorrect or mismatched speed.
-
-
-- [ESP starter](https://deepbluembedded.com/getting-started-with-esp32-programming-tutorials/)
-
-
+### Test Drive
+1. go to **(project) > platformio.ini**
+2. delete everything, copy and paste [test_drive.ini]()
 
 ## Arduino IDE
 1. [Download](https://www.arduino.cc/en/software/)
