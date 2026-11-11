@@ -16,10 +16,29 @@
  */
 
 #include "esp_camera.h"
+#include <esp_arduino_version.h>
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoOTA.h>
 #include <nvs_flash.h>
+
+// ===================== LEDC compatibility shim =====================
+// Arduino-ESP32 3.x replaced the old channel-based LEDC API with a simpler
+// pin-based one (ledcAttach/ledcWrite(pin, duty)). Arduino IDE's board
+// manager installs 3.x by default, but PlatformIO's official "espressif32"
+// platform still resolves to core 2.x unless pinned to a newer platform
+// (e.g. the pioarduino fork) — so building the unmodified 3.x-only calls
+// under PlatformIO fails with "'ledcAttach' was not declared in this
+// scope" even though the exact same file compiles fine in Arduino IDE.
+// This shim picks the right API at compile time either way.
+#if defined(ESP_ARDUINO_VERSION) && ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+  #define LEDC_INIT(pin, freq, res) ledcAttach(pin, freq, res)
+  #define LEDC_SET(pin, duty)       ledcWrite(pin, duty)
+#else
+  #define LEDC_CHANNEL_LED 4
+  #define LEDC_INIT(pin, freq, res) do { ledcSetup(LEDC_CHANNEL_LED, freq, res); ledcAttachPin(pin, LEDC_CHANNEL_LED); } while (0)
+  #define LEDC_SET(pin, duty)       ledcWrite(LEDC_CHANNEL_LED, duty)
+#endif
 
 // ===================== WiFi =====================
 const char *ssid     = "wifi-name";
@@ -109,7 +128,7 @@ void testMotor(int motor, bool forward) {
 
 void setLed(int level) {
   ledLevel = constrain(level, 0, 255);
-  ledcWrite(LED_PIN, ledLevel);
+  LEDC_SET(LED_PIN, ledLevel);
 }
 
 // ===================== HTML (light theme, chilljudge.com style) =====================
@@ -489,8 +508,8 @@ void setup() {
   }
 
   // ---- 5. LED PWM (after camera, so LEDC channel 0 is safe) ----
-  ledcAttach(LED_PIN, PWM_FREQ_LED, PWM_RES_LED);
-  ledcWrite(LED_PIN, 0);
+  LEDC_INIT(LED_PIN, PWM_FREQ_LED, PWM_RES_LED);
+  LEDC_SET(LED_PIN, 0);
 
   // ---- 6. WiFi (timeout instead of blocking forever; loop() retries) ----
   connectWiFi();

@@ -44,6 +44,24 @@ monitor_dtr = 0
 
 - [ESP starter](https://deepbluembedded.com/getting-started-with-esp32-programming-tutorials/)
 
+### Troubleshooting: builds in Arduino IDE but fails in PlatformIO
+
+If PlatformIO fails to compile with an error like `'ledcAttach' was not
+declared in this scope` (or `ledcWrite`/`ledcAttachPin` mismatches) while the
+exact same file builds fine in Arduino IDE: Arduino IDE's board manager
+installs the latest Arduino-ESP32 core (3.x), but PlatformIO's official
+`espressif32` platform still resolves to an older core (2.x) unless you pin
+it to a newer one — and the LEDC (PWM) API changed between the two.
+
+`scripts/drive.cpp` now detects the core version at compile time and uses
+whichever LEDC API matches, so pulling the latest version of that file
+should build on either toolchain without changing your `platformio.ini`.
+
+If you still hit a version mismatch elsewhere, you can point PlatformIO at
+the community [pioarduino](https://github.com/pioarduino/platform-espressif32)
+fork instead, which tracks Arduino-ESP32 3.x — replace the `platform` line
+in `platformio.ini` with the zip URL of its latest release.
+
 
 
 ## Arduino IDE
