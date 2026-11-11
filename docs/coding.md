@@ -43,7 +43,7 @@ monitor_dtr = 0
 1. go to **(project) > platformio.ini**
 2. delete everything, copy and paste [drive.ini](https://github.com/nturobotics/rover/blob/main/scripts/drive.ini)
 4. go to **(project) > src > main.cpp**
-5. copy and paste [https://github.com/nturobotics/rover/blob/main/scripts/drive.cpp) file
+5. copy and paste [drive.cpp](https://github.com/nturobotics/rover/blob/main/scripts/drive.cpp) file
 6. change wifi and password to the wifi you want to use
 
 <img width="400" alt="image" src="https://github.com/user-attachments/assets/24378f96-c4e3-449f-a7dc-dfa81cdf43a8" />
