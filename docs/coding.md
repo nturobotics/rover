@@ -12,7 +12,7 @@ Arduino IDE ESP32-CAM libraries take a long time to download
 
 [setup.webm](https://github.com/user-attachments/assets/9860006f-be23-491a-b1ea-f8f2e525caa0)
 
-
+[backup video](https://drive.google.com/file/d/1FqVc_2oiTAtl614GZTxiGzR1Fp7e_SgB/view?usp=drive_link)
 ### ESP32 Cam Blink Test
 1. go to **(project) > src > main.cpp**
 2. copy and paste [blink test](https://github.com/nturobotics/rover/blob/main/scripts/blink_test.cpp) file
@@ -40,6 +40,10 @@ monitor_dtr = 0
 
 
 ### Test Drive
+[code.webm](https://github.com/user-attachments/assets/a0f3a3e1-1c14-4fbe-bee4-c07fd831c026)
+
+[backup video](https://drive.google.com/file/d/1z8GcAHF27OqgmdZaCPqumCYQISTTpPzR/view?usp=drive_link)
+
 1. go to **(project) > platformio.ini**
 2. delete everything, copy and paste [drive.ini](https://github.com/nturobotics/rover/blob/main/scripts/drive.ini)
 4. go to **(project) > src > main.cpp**
