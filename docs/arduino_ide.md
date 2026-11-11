@@ -4,7 +4,7 @@
 3. [Finding our board](https://www.youtube.com/watch?v=z67mfL63e2M)
 
 # drive
-1. copy and paste [https://github.com/nturobotics/rover/blob/main/scripts/arduino_drive.cpp) file
+1. copy and paste [arduino_drive.cpp](https://github.com/nturobotics/rover/blob/main/scripts/arduino_drive.cpp) file
 2. change wifi and password to the wifi you want to use
 3. connect your laptop and any device you want to use to control the **Rover** to that wifi
 4. press **File > Save All**
