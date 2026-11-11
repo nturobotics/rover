@@ -5,16 +5,36 @@
  *    • WebServer(80)         → all control endpoints, runs in loop() on core 1
  *    • WiFiServer(81)        → MJPEG stream, runs in a FreeRTOS task on core 0
  *    • Therefore button requests never queue behind the video stream
+ *
+ *  ADDED IN THIS REVISION:
+ *    • WiFi connect timeout + background reconnect (no longer hangs forever)
+ *    • HTTP Basic Auth on every control endpoint + a shared key on the stream
+ *    • ArduinoOTA so you can re-flash over WiFi once it's on the car
+ *    • Light-themed control page (chilljudge.com style)
+ *
+ *  BEFORE FLASHING: change http_username / http_password / ota_password below.
  */
 
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <WebServer.h>
+#include <ArduinoOTA.h>
 #include <nvs_flash.h>
 
 // ===================== WiFi =====================
 const char *ssid     = "wifi-name";
 const char *password = "wifi-password";
+
+const unsigned long WIFI_CONNECT_TIMEOUT_MS = 15000;  // give up and retry in background after this
+const unsigned long WIFI_RETRY_INTERVAL_MS  = 10000;  // how often loop() retries while disconnected
+unsigned long wifiRetryAt = 0;
+
+// ===================== Access control =====================
+// http_password also doubles as the ?key= on the :81 video stream, which
+// can't do real Basic Auth (it's a raw socket, not WebServer).
+const char *http_username = "admin";
+const char *http_password = "rover1234";       // CHANGE ME
+const char *ota_password  = "rover-ota-1234";   // CHANGE ME
 
 // ===================== Motor pins =====================
 #define IN1  2    // left  +
@@ -50,6 +70,15 @@ int ledLevel = 0;
 // ===================== Servers =====================
 WebServer server(80);   // control endpoints, runs in loop() on core 1
 
+// ===================== Auth helper =====================
+bool requireAuth() {
+  if (!server.authenticate(http_username, http_password)) {
+    server.requestAuthentication();
+    return false;
+  }
+  return true;
+}
+
 // ===================== Motor functions =====================
 void moveForward()  { digitalWrite(IN1,HIGH); digitalWrite(IN2,LOW );
                       digitalWrite(IN3,HIGH); digitalWrite(IN4,LOW ); }
@@ -83,68 +112,159 @@ void setLed(int level) {
   ledcWrite(LED_PIN, ledLevel);
 }
 
-// ===================== HTML =====================
+// ===================== HTML (light theme, chilljudge.com style) =====================
 void handleRoot() {
+  if (!requireAuth()) return;
+
   String html = R"rawliteral(
 <!DOCTYPE html><html><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ESP32-CAM Car</title>
+<title>Rover Control</title>
 <style>
- body{font-family:Arial;text-align:center;margin-top:20px;background:#f0f0f0}
- img#stream{width:90%;max-width:480px;border:4px solid #333;border-radius:8px;background:#000}
- .btn{display:inline-block;width:110px;padding:18px 0;margin:8px;background:#3498db;color:#fff;
-      font-size:20px;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px #999}
- .btn:active{transform:translateY(4px);box-shadow:0 1px #666}
- .btn-stop{background:#e74c3c}.btn-spin{background:#9b59b6}.btn-led{background:#f1c40f;color:#333}
- .row{margin:12px 0}
- #status{margin-top:20px;font-size:18px;background:#333;color:#0f0;padding:10px;
-         border-radius:8px;display:inline-block;min-width:200px}
- .debug{margin-top:20px;border-top:1px solid #ccc;padding-top:20px}
- .debug .btn{width:80px;padding:10px 0;font-size:16px;background:#95a5a6}
+ :root{
+   --bg:#f1f5f9; --card:#ffffff; --border:#e2e8f0;
+   --text:#334155; --muted:#64748b; --faint:#94a3b8;
+   --accent:#14b8a6; --accent-light:#2dd4bf; --danger:#f43f5e;
+   --radius-card:24px; --radius-inner:16px;
+   --shadow:0 4px 20px rgba(0,0,0,0.06);
+ }
+ *{box-sizing:border-box}
+ body{
+   margin:0; min-height:100vh; background:var(--bg); color:var(--text);
+   font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif;
+   display:flex; flex-direction:column; align-items:center; gap:14px;
+   padding:16px 16px 40px;
+ }
+ .topbar{
+   display:flex; align-items:center; gap:10px; width:100%; max-width:420px;
+   background:rgba(255,255,255,0.9); backdrop-filter:blur(6px);
+   border:0.8px solid var(--border); border-radius:999px;
+   padding:10px 16px; box-shadow:var(--shadow);
+ }
+ .topbar .logo{font-size:18px}
+ .topbar h1{font-size:15px; font-weight:600; margin:0; flex:1}
+ .pill{
+   display:inline-flex; align-items:center; gap:6px;
+   font-size:12px; color:var(--muted);
+   background:#f8fafc; border:0.8px solid var(--border);
+   border-radius:999px; padding:4px 10px;
+ }
+ .dot{width:7px; height:7px; border-radius:50%; background:var(--faint)}
+ .dot.ok{background:var(--accent)}
+ .dot.err{background:var(--danger)}
+ .card{
+   width:100%; max-width:420px; background:var(--card);
+   border:0.8px solid var(--border); border-radius:var(--radius-card);
+   box-shadow:var(--shadow); padding:18px;
+ }
+ .stream-wrap{
+   width:100%; aspect-ratio:4/3; background:#0f172a;
+   border-radius:var(--radius-inner); border:0.8px solid var(--border);
+   overflow:hidden; display:flex; align-items:center; justify-content:center;
+   margin-bottom:16px;
+ }
+ .stream-wrap img{width:100%; height:100%; object-fit:cover; display:block}
+ h3.section{
+   font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+   color:var(--faint); margin:18px 0 10px;
+ }
+ h3.section:first-of-type{margin-top:0}
+ .btn{
+   appearance:none; border:0.8px solid var(--border); background:#ffffff; color:var(--text);
+   font-size:15px; font-weight:500; border-radius:999px; padding:14px 0;
+   cursor:pointer; box-shadow:0 1px 0 rgba(0,0,0,0.03);
+   transition:border-color .15s, transform .05s;
+ }
+ .btn:active{transform:translateY(1px)}
+ .btn:hover{border-color:#cbd5e1}
+ .btn-stop{background:var(--danger); color:#fff; border:none}
+ .btn-accent{background:var(--accent); color:#fff; border:none}
+ .btn-accent:hover{background:var(--accent-light)}
+ .dpad{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px}
+ .dpad .f{grid-column:2}
+ .dpad .l{grid-column:1}
+ .dpad .s{grid-column:2}
+ .dpad .r{grid-column:3}
+ .dpad .b{grid-column:2}
+ .row{display:flex; gap:8px; margin-bottom:8px}
+ .row .btn{flex:1}
+ .light-row{display:flex; gap:8px; margin-bottom:10px}
+ .light-row .btn{flex:1}
+ input[type=range]{width:100%; accent-color:var(--accent)}
+ .brightness-label{font-size:13px; color:var(--muted); margin-bottom:6px; display:flex; justify-content:space-between}
+ #status{
+   margin-top:16px; font-size:13px; color:var(--muted); background:#f8fafc;
+   border:0.8px solid var(--border); border-radius:var(--radius-inner);
+   padding:10px 12px; text-align:center;
+ }
+ .debug{margin-top:18px; border-top:0.8px solid var(--border); padding-top:14px}
+ .debug .row .btn{font-size:13px; padding:10px 0; color:var(--muted)}
 </style></head><body>
-<h1>&#128663; ESP32-CAM Car</h1>
-<img id="stream">
-<h3>Drive</h3>
-<div class="row"><button class="btn" onclick="sendCmd('forward')">&#9650; Forward</button></div>
-<div class="row">
- <button class="btn" onclick="sendCmd('left')">&#9668; Turn L</button>
- <button class="btn btn-stop" onclick="sendCmd('stop')">&#9632; Stop</button>
- <button class="btn" onclick="sendCmd('right')">&#9658; Turn R</button>
+
+<div class="topbar">
+  <span class="logo">&#128663;</span>
+  <h1>Rover Control</h1>
+  <span class="pill"><span class="dot ok" id="statusDot"></span><span id="statusText">ready</span></span>
 </div>
-<div class="row"><button class="btn" onclick="sendCmd('backward')">&#9660; Backward</button></div>
-<h3>Spin</h3>
-<div class="row">
- <button class="btn btn-spin" onclick="sendCmd('spinleft')">&#8630; Spin L</button>
- <button class="btn btn-spin" onclick="sendCmd('spinright')">&#8631; Spin R</button>
+
+<div class="card">
+  <div class="stream-wrap"><img id="stream" alt="live stream"></div>
+
+  <h3 class="section">Drive</h3>
+  <div class="dpad">
+    <button class="btn f" onclick="sendCmd('forward')">&#9650;</button>
+    <button class="btn l" onclick="sendCmd('left')">&#9668;</button>
+    <button class="btn btn-stop s" onclick="sendCmd('stop')">&#9632;</button>
+    <button class="btn r" onclick="sendCmd('right')">&#9658;</button>
+    <button class="btn b" onclick="sendCmd('backward')">&#9660;</button>
+  </div>
+
+  <h3 class="section">Spin</h3>
+  <div class="row">
+    <button class="btn btn-accent" onclick="sendCmd('spinleft')">&#8630; Spin L</button>
+    <button class="btn btn-accent" onclick="sendCmd('spinright')">&#8631; Spin R</button>
+  </div>
+
+  <h3 class="section">Light</h3>
+  <div class="light-row">
+    <button class="btn btn-accent" onclick="setLed(255)">&#128161; On</button>
+    <button class="btn" onclick="setLed(0)">Off</button>
+  </div>
+  <div class="brightness-label"><span>Brightness</span><span id="ledVal">0</span></div>
+  <input type="range" id="ledSlider" min="0" max="255" value="0"
+         oninput="document.getElementById('ledVal').innerText=this.value"
+         onchange="setLed(this.value)">
+
+  <div id="status">Ready</div>
+
+  <div class="debug">
+    <h3 class="section">Debug — per-motor test</h3>
+    <div class="row">
+      <button class="btn" onclick="sendCmd('test?motor=0&dir=fwd')">L-Fwd</button>
+      <button class="btn" onclick="sendCmd('test?motor=0&dir=bwd')">L-Bwd</button>
+    </div>
+    <div class="row">
+      <button class="btn" onclick="sendCmd('test?motor=1&dir=fwd')">R-Fwd</button>
+      <button class="btn" onclick="sendCmd('test?motor=1&dir=bwd')">R-Bwd</button>
+    </div>
+    <div class="row"><button class="btn btn-stop" onclick="sendCmd('stop')">Stop</button></div>
+  </div>
 </div>
-<h3>Light</h3>
-<div class="row">
- <button class="btn btn-led" onclick="setLed(255)">&#128161; On</button>
- <button class="btn btn-led" onclick="setLed(0)">Off</button>
-</div>
-<div>
- <label>Brightness: <span id="ledVal">0</span></label><br>
- <input type="range" id="ledSlider" min="0" max="255" value="0"
-        oninput="document.getElementById('ledVal').innerText=this.value"
-        onchange="setLed(this.value)">
-</div>
-<div id="status">Ready</div>
-<div class="debug">
- <h3>Debug – test each motor</h3>
- <button class="btn" onclick="sendCmd('test?motor=0&dir=fwd')">L-Fwd</button>
- <button class="btn" onclick="sendCmd('test?motor=0&dir=bwd')">L-Bwd</button>
- <button class="btn" onclick="sendCmd('test?motor=1&dir=fwd')">R-Fwd</button>
- <button class="btn" onclick="sendCmd('test?motor=1&dir=bwd')">R-Bwd</button>
- <button class="btn btn-stop" onclick="sendCmd('stop')">Stop</button>
-</div>
+
 <script>
- // Stream runs on port 81 (separate core) — never blocks these buttons
- document.getElementById('stream').src = 'http://' + location.hostname + ':81/';
+ // Stream runs on its own port (core 0) and carries the shared key as a
+ // query param, since the raw stream socket can't do Basic Auth.
+ document.getElementById('stream').src = 'http://' + location.hostname + ':81/?key=STREAM_KEY_PLACEHOLDER';
+
+ function setStatus(text, state){
+   document.getElementById('statusText').innerText = text;
+   document.getElementById('statusDot').className = 'dot ' + (state || '');
+ }
  function sendCmd(cmd){
    const s = document.getElementById('status');
    s.innerText = 'Sending...';
-   fetch('/' + cmd).then(r => r.text()).then(t => s.innerText = t)
-     .catch(e => s.innerText = 'Error: ' + e);
+   fetch('/' + cmd).then(r => r.text()).then(t => { s.innerText = t; setStatus('connected','ok'); })
+     .catch(e => { s.innerText = 'Error: ' + e; setStatus('offline','err'); });
  }
  function setLed(v){
    document.getElementById('ledVal').innerText = v;
@@ -155,19 +275,22 @@ void handleRoot() {
 </script>
 </body></html>
 )rawliteral";
+
+  html.replace("STREAM_KEY_PLACEHOLDER", http_password);
   server.send(200, "text/html", html);
 }
 
 // ===================== Control endpoint handlers =====================
-void handleForward()  { moveForward();  server.send(200,"text/plain","Forward"); }
-void handleBackward() { moveBackward(); server.send(200,"text/plain","Backward"); }
-void handleLeft()     { turnLeft();     server.send(200,"text/plain","Turn Left"); }
-void handleRight()    { turnRight();    server.send(200,"text/plain","Turn Right"); }
-void handleSpinLeft() { spinLeft();     server.send(200,"text/plain","Spin Left"); }
-void handleSpinRight(){ spinRight();    server.send(200,"text/plain","Spin Right"); }
-void handleStop()     { stopMotors();   server.send(200,"text/plain","Stopped"); }
+void handleForward()  { if (!requireAuth()) return; moveForward();  server.send(200,"text/plain","Forward"); }
+void handleBackward() { if (!requireAuth()) return; moveBackward(); server.send(200,"text/plain","Backward"); }
+void handleLeft()     { if (!requireAuth()) return; turnLeft();     server.send(200,"text/plain","Turn Left"); }
+void handleRight()    { if (!requireAuth()) return; turnRight();    server.send(200,"text/plain","Turn Right"); }
+void handleSpinLeft() { if (!requireAuth()) return; spinLeft();     server.send(200,"text/plain","Spin Left"); }
+void handleSpinRight(){ if (!requireAuth()) return; spinRight();    server.send(200,"text/plain","Spin Right"); }
+void handleStop()     { if (!requireAuth()) return; stopMotors();   server.send(200,"text/plain","Stopped"); }
 
 void handleTest() {
+  if (!requireAuth()) return;
   if (server.hasArg("motor") && server.hasArg("dir")) {
     int  m   = server.arg("motor").toInt();
     bool fwd = server.arg("dir") == "fwd";
@@ -175,9 +298,10 @@ void handleTest() {
     server.send(200,"text/plain", String("Test m") + m + (fwd?" fwd":" bwd"));
   } else server.send(400,"text/plain","Missing params");
 }
-void handleLedOn()  { setLed(255); server.send(200,"text/plain","LED On"); }
-void handleLedOff() { setLed(0);   server.send(200,"text/plain","LED Off"); }
+void handleLedOn()  { if (!requireAuth()) return; setLed(255); server.send(200,"text/plain","LED On"); }
+void handleLedOff() { if (!requireAuth()) return; setLed(0);   server.send(200,"text/plain","LED Off"); }
 void handleLedLevel() {
+  if (!requireAuth()) return;
   if (server.hasArg("value")) {
     setLed(server.arg("value").toInt());
     server.send(200,"text/plain", String("LED ") + ledLevel);
@@ -185,6 +309,8 @@ void handleLedLevel() {
 }
 
 // ===================== MJPEG stream task (runs on core 0) =====================
+// Raw WiFiServer, so auth here is a shared "?key=" query param (checked on
+// the request line) rather than real Basic Auth.
 void streamTask(void *param) {
   WiFiServer streamServer(81);
   streamServer.begin();
@@ -196,6 +322,24 @@ void streamTask(void *param) {
     WiFiClient client = streamServer.available();
     if (!client) {
       vTaskDelay(pdMS_TO_TICKS(10));
+      continue;
+    }
+
+    client.setTimeout(2000);
+    String reqLine = client.readStringUntil('\n');
+    bool authorized = reqLine.indexOf(String("key=") + http_password) != -1;
+
+    // Drain the rest of the headers up to the blank line, bounded so a
+    // misbehaving client can't hang this task forever.
+    for (int i = 0; i < 40; i++) {
+      String line = client.readStringUntil('\n');
+      line.trim();
+      if (line.length() == 0) break;
+    }
+
+    if (!authorized) {
+      client.print("HTTP/1.1 401 Unauthorized\r\nConnection: close\r\n\r\n");
+      client.stop();
       continue;
     }
 
@@ -227,6 +371,48 @@ void streamTask(void *param) {
     client.stop();
     Serial.println("Stream client disconnected");
   }
+}
+
+// ===================== WiFi =====================
+bool connectWiFi() {
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+
+  unsigned long start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_CONNECT_TIMEOUT_MS) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("WiFi connected. Open http://");
+    Serial.println(WiFi.localIP());
+    return true;
+  }
+  Serial.println("WiFi connect timed out — will keep retrying in the background");
+  return false;
+}
+
+// ===================== OTA =====================
+void setupOTA() {
+  ArduinoOTA.setHostname("esp32cam-rover");
+  ArduinoOTA.setPassword(ota_password);
+
+  ArduinoOTA.onStart([]() { Serial.println("OTA: starting update"); });
+  ArduinoOTA.onEnd([]()   { Serial.println("OTA: update finished"); });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    if (total > 0) Serial.printf("OTA: %u%%\r", (progress * 100) / total);
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("OTA error[%u]\n", error);
+  });
+
+  ArduinoOTA.begin();
+  Serial.println("OTA ready (hostname: esp32cam-rover.local)");
 }
 
 // ===================== Setup =====================
@@ -306,18 +492,13 @@ void setup() {
   ledcAttach(LED_PIN, PWM_FREQ_LED, PWM_RES_LED);
   ledcWrite(LED_PIN, 0);
 
-  // ---- 6. WiFi ----
-  WiFi.persistent(false);
-  WiFi.mode(WIFI_STA);
-  WiFi.setSleep(false);
-  WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi");
-  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
-  Serial.println();
-  Serial.print("WiFi connected. Open http://");
-  Serial.println(WiFi.localIP());
+  // ---- 6. WiFi (timeout instead of blocking forever; loop() retries) ----
+  connectWiFi();
 
-  // ---- 7. Control server on port 80 (runs in loop(), core 1) ----
+  // ---- 7. OTA (set up even if WiFi isn't connected yet; it just listens) ----
+  setupOTA();
+
+  // ---- 8. Control server on port 80 (runs in loop(), core 1) ----
   server.on("/",            handleRoot);
   server.on("/forward",     handleForward);
   server.on("/backward",    handleBackward);
@@ -333,7 +514,7 @@ void setup() {
   server.begin();
   Serial.println("Control server on port 80 (core 1)");
 
-  // ---- 8. Stream task on core 0 ----
+  // ---- 9. Stream task on core 0 ----
   xTaskCreatePinnedToCore(
     streamTask,          // task function
     "mjpeg_stream",      // task name
@@ -346,6 +527,13 @@ void setup() {
 }
 
 void loop() {
+  if (WiFi.status() != WL_CONNECTED && millis() - wifiRetryAt > WIFI_RETRY_INTERVAL_MS) {
+    wifiRetryAt = millis();
+    Serial.println("WiFi disconnected — reconnecting...");
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+  }
+  ArduinoOTA.handle();
   server.handleClient();
-  // Nothing else — stream runs in its own FreeRTOS task on core 0
+  // Camera stream runs in its own FreeRTOS task on core 0
 }
