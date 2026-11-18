@@ -1,4 +1,6 @@
 # Battery
+## Borrowing form
+<img width="300" alt="borrow" src="https://github.com/user-attachments/assets/86dd01de-2f13-4fcd-8607-00d841b03302" />
 
 model NCR18650GA
 
