@@ -5,7 +5,7 @@
 3. [Assembly](https://github.com/nturobotics/rover/blob/main/docs/assembly.md)
 4. [Wiring](https://github.com/nturobotics/rover/blob/main/docs/wiring.md)
 5. [Coding](https://github.com/nturobotics/rover/blob/main/docs/coding.md)
-
+6. [Battery Charging](https://github.com/nturobotics/rover/edit/main/docs/battery.md)
 ## Preview
 ### Rover with 3D body
 <img width="300" alt="P_20261014_193750" src="https://github.com/user-attachments/assets/446748f4-c14b-4433-b517-73c7e8ffa50e" />
