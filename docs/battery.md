@@ -41,5 +41,7 @@ Time Std. 270 min.
 2. Connect to positive and negative ends of batteries
 <img width="355" alt="image" src="https://github.com/user-attachments/assets/86c5bb70-1f4f-4172-9621-86a627284541" />
 
-3. Charge until 4.1V
+3. Charge until 4.0V - 4.1V
+
+if you charge above this voltage, the battery life will decrease
 
