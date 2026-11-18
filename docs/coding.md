@@ -71,5 +71,15 @@ monitor_dtr = 0
 
 <img width="496" alt="image" src="https://github.com/user-attachments/assets/3a29af3e-7f58-4799-be5e-7591472c2c6f" />
 
+## Control ERRORS
+### Wrong direction
+If your control direction is wrong. Let's say you press right (RED) but you go LEFT (PURPLE) instead. Do this:
+<img width="377" alt="direction" src="https://github.com/user-attachments/assets/475418d1-a0d0-4ea4-85a6-166c0fe3136d" />
+
+1. switch turnRight and turnLeft
+<img width="393" alt="image" src="https://github.com/user-attachments/assets/37b2465e-dc60-41dd-9f15-4cab75f02a9d" />
+<img width="393" alt="image" src="https://github.com/user-attachments/assets/6b31721c-db8d-4d15-a946-f2253f56428a" />
+
+
 ## Arduino IDE
 [Documentation](https://github.com/nturobotics/rover/blob/main/docs/arduino_ide.md)
